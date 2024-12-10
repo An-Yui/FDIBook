@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>第三章 基于观测器的残差生成 &#8212; 故障诊断中文书</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'Chapter3';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="第2讲 基于观测器的残差生成" href="Example2.html" />
+    <link rel="prev" title="基于模型的故障诊断方法" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="故障诊断中文书 - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="故障诊断中文书 - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    基于模型的故障诊断方法
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">第三章 基于观测器的残差生成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Example2.html">第2讲 基于观测器的残差生成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Example3.html">第3讲 基于未知输入观测器的鲁棒残差生成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Example4.html">第4讲 基于鲁棒观测器的最优残差生成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Example5.html">第5讲 基于阈值计算的残差评价方法</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Example6.html">第6讲 基于结构化残差生成的故障分离策略</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/Chapter3.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>第三章 基于观测器的残差生成</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.1 基于解析冗余的残差生成</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.2 基于观测器的连续时间系统的残差生成</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="id1">
+<h1>第三章 基于观测器的残差生成<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<p>一般来说，基于模型的故障诊断包括两个步骤：残差生成和残差评价。残差生成的主要任务是根据系统的数学模型生成能够反映故障影响的残差信号。残差评价的主要任务是通过对残差信号进行分析实现故障诊断。在基于模型的故障诊断研究中，残差生成方法是核心研究内容。本章介绍基于龙伯格观测器的残差生成方法。</p>
+<section id="id2">
+<h2>3.1 基于解析冗余的残差生成<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<p>既然基于模型的故障诊断是利用系统的解析模型进行故障诊断，那么一个很自然的想法是能不能直接利用系统的标称模型生成残差进行故障诊断？这种直接利用标称模型生成残差的思想如<a class="reference internal" href="#id3"><span class="std std-numref">Fig. 1</span></a>所示。</p>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="_images/Fig3-1.jpg"><img alt="_images/Fig3-1.jpg" src="_images/Fig3-1.jpg" style="height: 200px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">直接利用标称模型生成残差</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>虽然这看起来是一种简单直观的方法，在有些情况下也是可行的，但是这种方法是有问题的。首先，如果被诊断系统的系统矩阵<span class="math notranslate nohighlight">\(A\)</span>是不稳定的，则由标称模型得到的残差信号将会发散。其次，即使对于<span class="math notranslate nohighlight">\(A\)</span>稳定的被诊断系统，利用标称模型的残差生成器的性能完全取决于<span class="math notranslate nohighlight">\(A\)</span>矩阵特征值的位置。从控制理论的观点来看，直接利用标称模型的残差生成器是开环的，所以存在上述问题。为了使得初值误差的影响逐渐收敛于零，并且设计者可以调节残差生成器的性能，需要在残差生成器中引入反馈，如<a class="reference internal" href="#id4"><span class="std std-numref">Fig. 2</span></a>所示。</p>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="_images/Fig3-2.jpg"><img alt="_images/Fig3-2.jpg" src="_images/Fig3-2.jpg" style="height: 200px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">采用反馈结构的残差生成器</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id5">
+<h2>3.2 基于观测器的连续时间系统的残差生成<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>考虑如下的连续时间系统</p>
+<div class="math notranslate nohighlight" id="equation-eq3-1">
+<span class="eqno">(1)<a class="headerlink" href="#equation-eq3-1" title="Permalink to this equation">#</a></span>\[\begin{split}
+\left\{ \begin{array}{l}
+\dot{x}(t) = Ax(t)+Bu(t)+B_f f(t) \\
+y(t) = Cx(t) +D_f f(t)(t) 
+\end{array} \right. 
+\end{split}\]</div>
+<p>其中<span class="math notranslate nohighlight">\(x(t)\in \mathbb{R}^{n_x}\)</span>是状态向量，<span class="math notranslate nohighlight">\(u(t)\in \mathbb{R}^{n_u}\)</span>是控制输入，<span class="math notranslate nohighlight">\(y(t)\in \mathbb{R}^{n_y}\)</span>是测量输出，<span class="math notranslate nohighlight">\(f(t)\in \mathbb{R}^{n_f}\)</span>表示故障向量。<span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(B\)</span>, <span class="math notranslate nohighlight">\(C\)</span>, <span class="math notranslate nohighlight">\(B_f\)</span>和<span class="math notranslate nohighlight">\(D_f\)</span>是具有适当维度的已知常数矩阵。</p>
+<p>对于式<a class="reference internal" href="#equation-eq3-1">(1)</a>中的被诊断系统，其基于龙伯格观测器的残差生成器具有如下形式</p>
+<div class="math notranslate nohighlight" id="equation-eq3-2">
+<span class="eqno">(2)<a class="headerlink" href="#equation-eq3-2" title="Permalink to this equation">#</a></span>\[\begin{split}
+\left\{ \begin{array}{l}
+\dot{\hat{x}}(t) = A\hat{x}(t)+Bu(t)+L(y(t)- C \hat{x}(t))  \\
+r(t) = y(t) - C\hat{x}(t)
+\end{array} \right. 
+\end{split}\]</div>
+<p>其中<span class="math notranslate nohighlight">\(\hat{x}(t)\in \mathbb{R}^{n_x}\)</span>是状态估计向量，<span class="math notranslate nohighlight">\(r(t)\in \mathbb{R}^{n_y}\)</span>是残差向量，<span class="math notranslate nohighlight">\(L \in \mathbb{R}^{n_x \times n_y} \)</span>是待设计的观测器增益矩阵。</p>
+<p>基于观测器的残差生成器设计的基本任务是设计<span class="math notranslate nohighlight">\(L\)</span>使得在无故障时，残差<span class="math notranslate nohighlight">\(r(t)\)</span>逐渐收敛于零。</p>
+<p>为了设计基于观测器的残差生成器，首先要进行误差分析。定义如下的状态估计误差</p>
+<div class="math notranslate nohighlight" id="equation-eq3-3">
+<span class="eqno">(3)<a class="headerlink" href="#equation-eq3-3" title="Permalink to this equation">#</a></span>\[
+e(t) = x(t) -\hat{x}(t) 
+\]</div>
+<p>根据<a class="reference internal" href="#equation-eq3-1">(1)</a>和<a class="reference internal" href="#equation-eq3-2">(2)</a>可得</p>
+<div class="math notranslate nohighlight" id="equation-eq3-4">
+<span class="eqno">(4)<a class="headerlink" href="#equation-eq3-4" title="Permalink to this equation">#</a></span>\[
+\dot{e}(t) = (A-LC)e(t) +B_f f(t) -L D_f f(t) 
+\]</div>
+<p>我们希望误差方程在无故障时渐近稳定，从而使得残差在无故障时收敛于零。无故障时的误差方程为</p>
+<div class="math notranslate nohighlight" id="equation-eq3-5">
+<span class="eqno">(5)<a class="headerlink" href="#equation-eq3-5" title="Permalink to this equation">#</a></span>\[
+\dot{e}(t) = (A-LC)e(t) 
+\]</div>
+<p>基于式<a class="reference internal" href="#equation-eq3-5">(5)</a>中的误差方程，定义如下的李雅普诺夫函数</p>
+<div class="math notranslate nohighlight" id="equation-eq3-6">
+<span class="eqno">(6)<a class="headerlink" href="#equation-eq3-6" title="Permalink to this equation">#</a></span>\[
+V(t) =  e^T(t) P e(t)
+\]</div>
+<p>其中<span class="math notranslate nohighlight">\(P=P^T\succ 0\)</span>是一个对称正定矩阵。根据李雅普诺夫稳定性理论，如果对于所有的<span class="math notranslate nohighlight">\(e(t)\neq 0\)</span>时，都有<span class="math notranslate nohighlight">\(\dot{V}(t)&lt;0\)</span>成立，则误差系统<a class="reference internal" href="#equation-eq3-5">(5)</a>是渐近稳定的。</p>
+<p>由式<a class="reference internal" href="#equation-eq3-5">(5)</a>可得</p>
+<div class="math notranslate nohighlight" id="equation-eq3-7">
+<span class="eqno">(7)<a class="headerlink" href="#equation-eq3-7" title="Permalink to this equation">#</a></span>\[ 
+\dot{V}(t) =  e^T(t) ( (A-LC)^T P+P (A-LC)  )e(t) 
+\]</div>
+<p>由此可知，如果存在一个对称正定矩阵<span class="math notranslate nohighlight">\(P\succ 0\)</span>使得</p>
+<div class="math notranslate nohighlight" id="equation-eq3-8">
+<span class="eqno">(8)<a class="headerlink" href="#equation-eq3-8" title="Permalink to this equation">#</a></span>\[
+(A-LC)^T P+P (A-LC)  \prec 0 
+\]</div>
+<p>成立，则误差系统<a class="reference internal" href="#equation-eq3-5">(5)</a>是渐近稳定的。也就是说，残差生成器<a class="reference internal" href="#equation-eq3-2">(2)</a>的设计条件是找到矩阵<span class="math notranslate nohighlight">\(P\)</span>和<span class="math notranslate nohighlight">\(L\)</span>使得如下矩阵不等式成立</p>
+<div class="math notranslate nohighlight" id="equation-eq3-9">
+<span class="eqno">(9)<a class="headerlink" href="#equation-eq3-9" title="Permalink to this equation">#</a></span>\[
+P \succ 0 
+\]</div>
+<div class="math notranslate nohighlight" id="equation-eq3-10">
+<span class="eqno">(10)<a class="headerlink" href="#equation-eq3-10" title="Permalink to this equation">#</a></span>\[
+(A-LC)^T P+P (A-LC)  \prec 0 
+\]</div>
+<p>式<a class="reference internal" href="#equation-eq3-10">(10)</a>中的设计条件中存在<span class="math notranslate nohighlight">\(PL\)</span>项，并非标准的线性矩阵不等式，还需要进一步将其转化为便于求解的标准线性矩阵不等式形式。令<span class="math notranslate nohighlight">\(L=P^{-1}W\)</span>，可将<a class="reference internal" href="#equation-eq3-10">(10)</a>转化为</p>
+<div class="math notranslate nohighlight" id="equation-eq3-11">
+<span class="eqno">(11)<a class="headerlink" href="#equation-eq3-11" title="Permalink to this equation">#</a></span>\[
+A^TP -C^T W^T+P A-WC  \prec 0 
+\]</div>
+<p>此时，可以使用线性矩阵不等式工具箱\cite{Lofberg2004chapter3,Zhang2016chapter3}求解。若<a class="reference internal" href="#equation-eq3-9">(9)</a>和<a class="reference internal" href="#equation-eq3-11">(11)</a>存在可行解，则可由<span class="math notranslate nohighlight">\(L=P^{-1}W\)</span>确定观测器的增益矩阵<span class="math notranslate nohighlight">\(L\)</span>。</p>
+<p>接下来，以一个简单的数值算例说明基于观测器的残差生成。</p>
+<p>考虑式<a class="reference internal" href="#equation-eq3-1">(1)</a>中的系统，其中参数矩阵为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+A = \begin{bmatrix}
+0 &amp; 1 &amp; 0\\
+-1 &amp; -2 &amp; 1 \\
+0 &amp; -1 &amp; -2 
+\end{bmatrix},\,
+B = \begin{bmatrix}
+0 &amp; 0  \\
+0 &amp; -1 \\
+1 &amp; 1
+\end{bmatrix},\,
+B_f = \begin{bmatrix}
+0    \\
+0   \\
+1 
+\end{bmatrix},
+C = \begin{bmatrix}
+1 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0
+\end{bmatrix},\, 
+D_f = \begin{bmatrix}
+0 &amp; 0   \\
+0 &amp;   0
+\end{bmatrix}
+\end{split}\]</div>
+<p>接下来，介绍在Python中设计基于观测器的残差生成器，并进行仿真的过程。在设计观测器之前，需要首先定义系统的参数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">]])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>针对此系统，构造式<a class="reference internal" href="#equation-eq3-2">(2)</a><span id="id6">[<a class="reference internal" href="#id8" title="J. Lofberg. Yalmip : a toolbox for modeling and optimization in matlab. In 2004 IEEE International Conference on Robotics and Automation (IEEE Cat. No.04CH37508), volume, 284-289. 2004. doi:10.1109/CACSD.2004.1393890.">1</a>, <a class="reference internal" href="#id9" title="Jian Zhang, Akshya Kumar Swain, and Sing Kiong Nguang. Robust observer-based fault diagnosis for nonlinear systems using MATLAB®. Springer, 2016.">2</a>]</span>中的观测器来生成残差。求解<a class="reference internal" href="#equation-eq3-9">(9)</a>和<a class="reference internal" href="#equation-eq3-11">(11)</a>中的线性矩阵不等式
+并由<span class="math notranslate nohighlight">\(L=P^{-1}W\)</span>求解得观测器的增益矩阵<span class="math notranslate nohighlight">\(L\)</span>。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cvxpy</span> <span class="k">as</span> <span class="nn">cp</span>
+
+<span class="c1"># 定义矩阵变量P和W</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Variable</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Variable</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="c1"># 定义需要求解的LMI问题</span>
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span><span class="n">P</span> <span class="o">&gt;&gt;</span> <span class="mf">0.001</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="n">constraints</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">P</span><span class="nd">@A</span> <span class="o">-</span> <span class="n">W</span><span class="nd">@C</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">P</span><span class="nd">@A</span> <span class="o">-</span> <span class="n">W</span><span class="nd">@C</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mf">0.001</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="n">prob</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">Minimize</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">constraints</span><span class="p">)</span>
+<span class="c1"># 求解LMI</span>
+<span class="n">prob</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="c1"># 求矩阵L</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">value</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">value</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="nd">@W</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>利用上述程序可以得到如下的增益矩阵</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+L = \begin{bmatrix}
+0.5000 &amp;   -0.0597 \\
+-0.0512  &amp;  -1.5040 \\
+0.0413 &amp;   -0.0655
+\end{bmatrix}
+\end{split}\]</div>
+<p>然后即可进行数值仿真。</p>
+<div class="docutils container" id="id7">
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">1</a><span class="fn-bracket">]</span></span>
+<p>J. Lofberg. Yalmip : a toolbox for modeling and optimization in matlab. In <em>2004 IEEE International Conference on Robotics and Automation (IEEE Cat. No.04CH37508)</em>, volume, 284–289. 2004. <a class="reference external" href="https://doi.org/10.1109/CACSD.2004.1393890">doi:10.1109/CACSD.2004.1393890</a>.</p>
+</div>
+<div class="citation" id="id9" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">2</a><span class="fn-bracket">]</span></span>
+<p>Jian Zhang, Akshya Kumar Swain, and Sing Kiong Nguang. <em>Robust observer-based fault diagnosis for nonlinear systems using MATLAB®</em>. Springer, 2016.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">基于模型的故障诊断方法</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Example2.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">第2讲 基于观测器的残差生成</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.1 基于解析冗余的残差生成</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.2 基于观测器的连续时间系统的残差生成</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The Jupyter Book community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
