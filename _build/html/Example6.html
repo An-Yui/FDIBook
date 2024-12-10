@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>第6讲 基于结构化残差生成的故障分离策略 &#8212; FDI Book</title>
+    <title>第6讲 基于结构化残差生成的故障分离策略 &#8212; 故障诊断中文书</title>
   
   
   
@@ -154,8 +154,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="FDI Book - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="FDI Book - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="故障诊断中文书 - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="故障诊断中文书 - Home"/>`);</script>
   
   
 </a></div>
@@ -170,7 +170,7 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="Example1.html">第1讲 动态系统的模型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Chapter3.html">第三章 基于观测器的残差生成</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Example2.html">第2讲 基于观测器的残差生成</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Example3.html">第3讲 基于未知输入观测器的鲁棒残差生成</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Example4.html">第4讲 基于鲁棒观测器的最优残差生成</a></li>
@@ -480,36 +480,6 @@ y(k) = Cx(k)
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.00000000e+00 -7.00000000e-02 -6.86000000e-01 -6.13783392e-01
-  -5.31091853e-01 -6.34924258e-01 -7.02213188e-01 -7.23725690e-01
-  -7.60907033e-01 -8.03365038e-01 -8.36031357e-01 -8.64214005e-01
-  -8.90458422e-01 -9.12415686e-01 -9.29520449e-01 -9.42234405e-01
-  -9.50397409e-01 -9.53763720e-01 -9.52341478e-01 -9.46180867e-01
-  -9.35324969e-01 -9.19876233e-01 -8.99995210e-01 -8.75880932e-01
-  -8.47772590e-01 -8.15951279e-01 -7.80735371e-01 -7.42476581e-01
-  -7.01557094e-01 -6.58385820e-01 -6.13394126e-01 -5.67031534e-01
-  -5.19761285e-01 -4.72055693e-01 -4.24391414e-01 -3.77244694e-01
-  -3.31086608e-01 -2.86378352e-01 -2.43566635e-01 -2.03079219e-01
-  -1.65320641e-01 -1.30668171e-01 -9.94680460e-02 -7.20320068e-02
-  -4.86341855e-02 -2.95083653e-02 -1.48456451e-02 -4.79252997e-03
-   5.50532721e-04  1.13015684e-03 -3.05944902e-03 -1.19764237e-02
-  -2.55316718e-02 -4.35897536e-02 -6.59702389e-02 -9.24495092e-02
-  -1.22762992e-01 -1.56607806e-01 -1.93645784e-01 -2.33506856e-01
-  -2.75792742e-01 -3.20080935e-01 -3.65928924e-01 -4.12878610e-01
-  -4.60460887e-01 -5.08200328e-01 -5.55619938e-01 -6.02245915e-01
-  -6.47612388e-01 -6.91266070e-01 -7.32770787e-01 -7.71711839e-01
-  -8.07700139e-01 -8.40376104e-01 -8.69413246e-01 -8.94521437e-01
-  -9.15449803e-01 -9.31989235e-01 -9.43974477e-01 -9.51285775e-01
-  -9.53850078e-01 -9.51641764e-01 -9.44682899e-01 -9.33043011e-01
-  -9.16838405e-01 -8.96230990e-01 -8.71426668e-01 -8.42673278e-01
-  -8.10258112e-01 -7.74505054e-01 -7.35771334e-01 -6.94443968e-01
-  -6.50935886e-01 -6.05681805e-01 -5.59133890e-01 -5.11757231e-01
-  -4.64025201e-01 -4.16414723e-01 -3.69401504e-01 -3.23455285e-01
-  -2.79035146e-01]]
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="id8">
@@ -543,7 +513,7 @@ y(k) = Cx(k)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/a1e747a939f6e2dd9d01d78500d43a2d02086d6554185da710872e87d41de328.png" src="_images/a1e747a939f6e2dd9d01d78500d43a2d02086d6554185da710872e87d41de328.png" />
+<img alt="_images/d76024e376341df2c42e385410cff804ac7c792e617c6585ea9fce5890309034.png" src="_images/d76024e376341df2c42e385410cff804ac7c792e617c6585ea9fce5890309034.png" />
 </div>
 </div>
 <p>画输出y的曲线</p>
@@ -561,7 +531,7 @@ y(k) = Cx(k)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c9e86c69fb0a219495cdd1b0357e4396577847d39835bea92af7207c531cf875.png" src="_images/c9e86c69fb0a219495cdd1b0357e4396577847d39835bea92af7207c531cf875.png" />
+<img alt="_images/3b2e39fa55edbb5c81d2230fff42a79e7e9ba54f873ebfccfded1835d059e062.png" src="_images/3b2e39fa55edbb5c81d2230fff42a79e7e9ba54f873ebfccfded1835d059e062.png" />
 </div>
 </div>
 </section>

@@ -1,5 +1,14 @@
 # in _config.yml
-title: FDI Book
+title: 故障诊断中文书
 logo: logo.png
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: "off"
+  execute_notebooks: force
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+  - C3.bib
+  # In _config.yml
+sphinx:
+  config:
+    bibtex_reference_style: label # label, super, and author-year.
