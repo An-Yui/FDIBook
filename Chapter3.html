@@ -461,6 +461,12 @@ D_f = \begin{bmatrix}
 <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
               <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
               <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">]])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">Bf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
               <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
 </pre></div>
@@ -500,6 +506,141 @@ L = \begin{bmatrix}
 \end{bmatrix}
 \end{split}\]</div>
 <p>然后即可进行数值仿真。</p>
+<p>首先，设置仿真时间</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_max</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">tspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span> 
+<span class="n">Nk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tspan</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>为了便于数据的存储和读取，可以根据仿真时间预设数据存储的数组</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 被诊断对象的相关变量</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">Nk</span><span class="p">))</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">Nk</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">Nk</span><span class="p">))</span>
+<span class="c1"># 残差生成器相关变量</span>
+<span class="n">xhat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">Nk</span><span class="p">))</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">Nk</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>然后，可以对相关变量进行初始化</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">],[</span><span class="mf">0.1</span><span class="p">]])</span> 
+<span class="n">y</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">C</span><span class="nd">@x</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">xhat</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">]])</span> 
+<span class="n">r</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">C</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>仿真中，被诊断系统的状态初值和观测器的初始估计值为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+x(0) = \begin{bmatrix}
+0\\
+0\\
+0.1
+\end{bmatrix} ,\, \,
+\hat{x}(0) = \begin{bmatrix}
+0\\
+0 \\
+0 
+\end{bmatrix} 
+\end{split}\]</div>
+<p>接下来可以进行数值仿真。首先考虑无故障时的残差生成。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">Nk</span><span class="p">):</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">A</span><span class="nd">@x</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">B</span><span class="nd">@u</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">x</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">dx</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">y</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">C</span><span class="nd">@x</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span>
+    <span class="n">dxhat</span> <span class="o">=</span> <span class="n">A</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">L</span><span class="o">@</span><span class="p">(</span><span class="n">y</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">C</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">dxhat</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">r</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">-</span> <span class="n">C</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>在仿真循环结束后，可以通过如下指令可以画出残差信号</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">211</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tspan</span><span class="p">,</span><span class="n">r</span><span class="p">[[</span><span class="mi">0</span><span class="p">],:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$r_1(t)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tspan</span><span class="p">,</span><span class="n">r</span><span class="p">[[</span><span class="mi">1</span><span class="p">],:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$r_2(t)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/28b2a92e4adbb65a81858661b06c21fe86135da98bfb8b89a6889dd5af1af9ea.png" src="_images/28b2a92e4adbb65a81858661b06c21fe86135da98bfb8b89a6889dd5af1af9ea.png" />
+</div>
+</div>
+<p>在无故障的情况下，所得到的残差如上图所示。可以看出，最开始残差受到初始估计误差的影响，但最终收敛于零。</p>
+<p>接下来，进行有故障情况下的数值仿真。考虑如下形式的故障</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+f(t) =\left\{ \begin{array}{ll}
+0  \, &amp;   \, t&lt; 5 \\
+1  \, &amp;   \, t\geq 5
+\end{array} \right.
+\end{split}\]</div>
+<p>在仿真时间和仿真初始条件不变的情况下，采用如下的仿真代码</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">Nk</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dt</span><span class="o">*</span><span class="n">k</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">A</span><span class="nd">@x</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">B</span><span class="nd">@u</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">Bf</span><span class="o">*</span><span class="n">f</span>
+    <span class="n">x</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">dx</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">y</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">C</span><span class="nd">@x</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span>
+    <span class="n">dxhat</span> <span class="o">=</span> <span class="n">A</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">L</span><span class="o">@</span><span class="p">(</span><span class="n">y</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">C</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">dxhat</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">r</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span> <span class="o">-</span> <span class="n">C</span><span class="nd">@xhat</span><span class="p">[:,[</span><span class="n">k</span><span class="p">]]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">211</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tspan</span><span class="p">,</span><span class="n">r</span><span class="p">[[</span><span class="mi">0</span><span class="p">],:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$r_1(t)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tspan</span><span class="p">,</span><span class="n">r</span><span class="p">[[</span><span class="mi">1</span><span class="p">],:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$r_2(t)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/a99510ec46ee545bda770dfacbe844689deddba9c211b6a2b998afce7f03ec8e.png" src="_images/a99510ec46ee545bda770dfacbe844689deddba9c211b6a2b998afce7f03ec8e.png" />
+</div>
+</div>
+<p>可以得到上图中的残差信号。可以看出，无故障时的残差会渐近收敛于零，而发生故障后会产生比较明显的变化，能够反映出故障的影响。</p>
 <div class="docutils container" id="id7">
 <div class="citation" id="id8" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">1</a><span class="fn-bracket">]</span></span>
